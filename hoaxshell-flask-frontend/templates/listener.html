@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hoaxshell</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Hoaxshell</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Command Output</div>
+                    <div class="panel-body">
+                        <div id="output"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Command Input</div>
+                    <div class="panel-body">
+                        <form id="command-form">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="command" placeholder="Command">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">Run</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('connect', function() {
+            socket.emit('my event', {data: 'I\'m connected!'});
+        });
+        socket.on('my response', function(msg) {
+            $('#output').append('<p>' + msg.data + '</p>');
+        });
+        $(function() {
+            $('#command-form').submit(function(event) {
+                socket.emit('my event', {data: $('#command-form input[name="command"]').val()});
+                $('#command-form input[name="command"]').val('');
+                return false;
+            });
+        });
+    </script>
+</body>
+</html>
